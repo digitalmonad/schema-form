@@ -1,4 +1,7 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
+const nextConfig = {
+    output: 'export',
+    basePath: process.env.NODE_ENV === 'development' ? '' : '/schema-form',
+}
 
-export default nextConfig;
+export default nextConfig
