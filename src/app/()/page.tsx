@@ -7,13 +7,14 @@ import {
 } from '@/components/ui/resizable'
 import { Separator } from '@/components/ui/separator'
 import { Textarea } from '@/components/ui/textarea'
-import { jsonSchema } from '@/lib/formSchema'
+import { FormSchema, formSchema } from '@/lib/formSchema'
 import { isValidJSON } from '@/lib/jsonValidation'
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { FormRenderer } from './components/FormRenderer'
 
 export default function Home() {
-    const [schema, setSchema] = useState<any | null>(null)
+    const [schema, setSchema] = useState<FormSchema | null>(null)
 
     function onSubmit(e: React.FormEvent<HTMLFormElement>): void {
         e.preventDefault()
@@ -27,13 +28,15 @@ export default function Home() {
             return
         }
 
+        // Check if form input is valid JSON
         const result = isValidJSON(value)
         if (!result.success) {
             toast.error(result.error)
             return
         }
 
-        const parsedSchema = jsonSchema.safeParse(result.data)
+        // Check if form input satisfies predefined schema
+        const parsedSchema = formSchema.safeParse(result.data)
         if (!parsedSchema.success) {
             toast.error(
                 `Invalid schema: ${parsedSchema.error
@@ -51,25 +54,36 @@ export default function Home() {
             <ResizablePanelGroup direction="horizontal">
                 <ResizablePanel defaultSize={30} minSize={30} maxSize={70}>
                     <form className="flex flex-col h-full" {...{ onSubmit }}>
-                        <div className="flex flex-[0.5] flex-col h-[200px] p-6 space-y-6">
+                        <div className="flex flex-col p-6 space-y-6">
                             <Textarea
                                 autoFocus={true}
                                 placeholder="Enter the JSON schema"
                                 id="schema"
-                                className="flex-1"
+                                className="max-h-[780px] h-[400px]"
                             />
                             <Button
                                 variant={'outline'}
                                 type="submit"
                                 className=""
                             >
-                                Submit
+                                Create form ->
                             </Button>
                         </div>
                     </form>
                 </ResizablePanel>
                 <ResizableHandle />
-                <ResizablePanel defaultSize={70}></ResizablePanel>
+                <ResizablePanel defaultSize={70} minSize={30}>
+                    <div className="flex h-full items-center p-10 justify-center">
+                        <div className="max-w-[500px] flex-1">
+                            {schema !== null && (
+                                <FormRenderer
+                                    schema={schema}
+                                    key={JSON.stringify(schema)}
+                                />
+                            )}
+                        </div>
+                    </div>
+                </ResizablePanel>
             </ResizablePanelGroup>
         </main>
     )
