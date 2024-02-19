@@ -66,7 +66,7 @@ export default function Home() {
                                 type="submit"
                                 className=""
                             >
-                                Create form ->
+                                Create form &gt;
                             </Button>
                         </div>
                     </form>
